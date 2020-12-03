@@ -1,8 +1,10 @@
 const http = require("http2");
 const fs = require("fs");
-const reactive = require("./foo");
+const bus = require("./bus")
+
 
 const { pipeline } = require("stream");
+const { request } = require("http");
 const serverOptions = {
 	key: fs.readFileSync(__dirname + "/secret/localhost-privkey.pem"),
 	cert: fs.readFileSync(__dirname + "/secret/localhost-cert.pem"),
@@ -27,15 +29,23 @@ server.on("stream", (stream, requestHeaders) => {
 			}
 
 			const fileStream = fs.createReadStream(__dirname + "/public/index.html");
-			reactive.subject.next(count++);
 			pipeline(fileStream, stream, (err) => {
 				if (err) stream.end(err);
 			});
 		}
 	}
+	if (requestHeaders[':path']=='/chat'){
+		stream.respond({'content-type':'application/json'})
+		bus.instance.createRoom().then((id)=>{
+			stream.end({room:id})
+		})
+	}
 	if (requestHeaders[":path"] == "/live") {
+	
 		stream.respond({'content-type':'text/event-stream','cache-control':'no-cache','access-control-allow-credentials':'*'})
-		setInterval(function(){
+		setInterval(
+
+			function(){
 			if (!stream.destroyed){
 				stream.write( `event:custom\nid: 1\ndata:${Math.random(1,10)}\n\n`)
 			}
