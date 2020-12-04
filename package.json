@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "test-coverage":"npx jest --config='./jest.config.js' --collect-coverage",
     "test": "npx jest --config='./jest.config.js'"
   },
   "keywords": [

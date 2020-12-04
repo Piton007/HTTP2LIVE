@@ -1,7 +1,7 @@
-const { Room } = require("./room");
+const { Room } = require("room");
 const {v4} = require("uuid")
-const { User } = require("./user");
-const {Message,Payload} = require("./payload")
+const { User } = require("user");
+const {Message} = require("payload")
 
 describe("Room tests", () => {
 	beforeAll(function () {
@@ -28,10 +28,9 @@ describe("Room tests", () => {
 		return Room.create("test", [new User("connection1")]).then((room)=>{
 			
 			const msg = fakeData.msg()
-			const expected = fakeData.SSEMsg('test',new Date(),msg)
-			const payload = Payload.build('test',msg)
+			const expected = fakeData.SSEMsg('new_room',new Date(),msg)
 			room.dispatch(msg)
-			expect(payload.toString()).toEqual(expected)
+			expect(room.pull()).toEqual(expected)
 			 
         });
 	});

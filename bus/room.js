@@ -1,7 +1,8 @@
 const {v4} = require("uuid")
 const {Payload} = require("./payload")
+const {Broker} = require("./broker")
 
-class Room {
+class Room extends Broker {
     
     static create(name,clients){
         return v4().then((id)=>{
@@ -9,11 +10,11 @@ class Room {
         })
     }
     constructor(id,name,clients){
+        super(name,clients)
         this.id = id
-        this.name = name
-        this.clients = clients
         this.queue = []
     }
+
 
     dispatch(msg){
         this.queue.push(Payload.build(this.id,msg))
