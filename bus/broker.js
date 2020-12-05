@@ -1,5 +1,6 @@
 class Broker {
-   constructor(name,children){
+   constructor(id,name,children){
+        this.id = id
         this.name = name
         this.children = children
    } 

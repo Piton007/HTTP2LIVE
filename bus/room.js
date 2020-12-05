@@ -10,8 +10,7 @@ class Room extends Broker {
         })
     }
     constructor(id,name,clients){
-        super(name,clients)
-        this.id = id
+        super(id,name,clients)
         this.queue = []
     }
 
@@ -21,7 +20,12 @@ class Room extends Broker {
     }
 
     pull(){
-        return this.queue.pop().toString()
+        const msg = this.queue.pop(0)
+        let result = Payload.empty(this.id)
+        if (msg){
+            result =  msg
+        }
+        return result.toString()
     }
 
 }
