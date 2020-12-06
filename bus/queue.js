@@ -1,16 +1,13 @@
-const {v4} = require("uuid")
 const {Payload} = require("./payload")
-const {Broker} = require("./broker")
 
-class Room extends Broker {
+class Queue  {
     
-    static create(name,clients){
-        return v4().then((id)=>{
-            return new Room(id,name,clients)
-        })
+    static create(id){
+        return new Queue(id)
     }
-    constructor(id,name,clients){
-        super(id,name,clients)
+
+    constructor(id){
+        this.id = id
         this.queue = []
     }
 
@@ -28,11 +25,15 @@ class Room extends Broker {
         return result.toString()
     }
 
+    length(){
+        return this.queue.length
+    }
+
 }
 
 
 
 
 module.exports = {
-    Room
+    Queue
 }

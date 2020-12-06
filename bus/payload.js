@@ -11,7 +11,7 @@ class Payload {
 		this.date = date;
 	}
 	toString() {
-		return `event:${this.event}\ndate: ${this.date.toLocaleDateString()}\ndata:${this.data}\n\n`;
+		return `event:${this.event}\ndate: ${this.date.toLocaleDateString()}\ndata:${JSON.stringify(this.data)}\n\n`;
 	}
 }
 
