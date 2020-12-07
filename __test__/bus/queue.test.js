@@ -13,11 +13,11 @@ describe("Queue tests", () => {
 
 	test("Given some users joined in Queue When user X send msg Then Queue queue should contains the msg", () => {
 		const queue = Queue.create('queueX')
-		const oldSize = queue.length()
+		const oldSize = queue.length
 		queue.dispatch(fakeData.msg())
-		expect(queue.length()).toEqual(oldSize + 1) 
+		expect(queue.length).toEqual(oldSize + 1) 
 	});
-	test("Given Queue X queue is not empty When bus requests msg Then Queue queue should return the oldest message in SSE Format", () => {
+	test("Given Queue X is not empty When bus make msg request Then Queue queue should return the oldest message in SSE Format", () => {
 		const queue = Queue.create('queueX')
 		const msg = fakeData.msg()
 		const expected = fakeData.SSEMsg("queueX", new Date(), msg);

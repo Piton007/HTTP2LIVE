@@ -1,20 +1,30 @@
-const {v4} = require("uuid")
+const { v4 } = require("uuid")
 
-class Broker {
+class Client {
 
-    static create(name,children){
+    static create(){
         return v4().then((id)=>{
-            return new User(id,name,children)
+            return new Client(id)
         })
     }
 
-    constructor(connectionId,name,children){
-        super(connectionId,name,children)
+    constructor(id){
+        this.id = id
+        this._chats = {} 
     }
 
-    
-   
-} 
+    suscribe(chat){
+        this._chats[chat.id] = chat
+    }
+
+    pullChats(callback){
+        for (const id in this._chats) {
+            callback(this._chats[id].pull())
+        }
+    }
+
+}
+
 module.exports = {
-    User
+    Client
 }

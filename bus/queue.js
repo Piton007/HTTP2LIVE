@@ -2,18 +2,19 @@ const {Payload} = require("./payload")
 
 class Queue  {
     
-    static create(id){
-        return new Queue(id)
+    static create(id,topic){
+        return new Queue(id,topic)
     }
 
-    constructor(id){
+    constructor(id,topic){
+        this.topic = topic || id
         this.id = id
         this.queue = []
     }
 
 
     dispatch(msg){
-        this.queue.push(Payload.build(this.id,msg))
+        this.queue.push(Payload.build(this.topic,msg))
     }
 
     pull(){
@@ -25,9 +26,11 @@ class Queue  {
         return result.toString()
     }
 
-    length(){
+    get length(){
         return this.queue.length
     }
+
+  
 
 }
 

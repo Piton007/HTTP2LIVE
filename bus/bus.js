@@ -1,54 +1,62 @@
-const { v4 } = require("uuid");
-const { Room } = require("./room");
-const { User } = require("./user");
+const {User} = require("./user")
+const { Topic } = require("./topic");
 
 class EventBus {
 	constructor() {
-		this.brokers = {};
+        this.users = {};
+        this.chats = {}
 	}
 
-	createUserConnection(name) {
-		return User.create(name,[]).then((user)=>{
-            this.brokers[user.id] = user
+	createUser() {
+		return User.create().then((user)=>{
+            this.users[user.id] = user 
             return user.id
         })
-	}
+    }
 
-	join(name, userConnection) {
-        let self = this;
+    getWorker(workerId){
+        return this.workers[workerId]
+    }
+
+    dispatch(chatId,msg){
+        if (this.chats[chatId]){
+            this.chats[chatId].dispatch(msg)
+        }
+    }
+
+	join(workerId, chatId) {
         return new Promise((res,rej)=>{
-            
-            const room = Object.values(this.brokers).find((x) => x.name === name);
-            
-            if (room) {
-                self.brokers[userConnection].addChild(room.id)
-                res(room.id)
-               
+            if (this.chats[chatId]){
+               this._join(workerId,chatId)
+               res(queueId)
             }else{
-                Room.create(name,[userConnection]).then((r)=>{
-                    self.brokers[r.id] = r  
-                    self.brokers[userConnection].addChild(r.id)
-                    res(r.id)
+                return this._createChat().then((id)=>{
+                    this._join(workerId,id)                       
+                    res(id)
                 })
             }
-
         })
 		
     }
-    listen(userConnectionId,callback){
-        const user = this.brokers[userConnectionId]
+    listen(userId,callback){
+        const user = this.users[userId]
         if (user){
-            user.children.forEach((roomId)=>{
-                callback(this.brokers[roomId].pull())
+            user.chats.forEach((q)=>{
+                callback(q.pull())
             })
         }
     }
 
-    to(roomId){
-        return this.brokers[roomId]
-    }
    
-	
+    _createChat(){
+        return Topic.create().then((topic)=>{
+            this.chats[topic.id] = topic
+            return topic.id
+        })
+    }
+	_join(workerId,chatId){
+        this.users[workerId].addChat(this.chats[chatId].addQueue(workerId))
+    }
 }
 
 module.exports = {
