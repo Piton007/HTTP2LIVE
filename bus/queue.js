@@ -19,7 +19,7 @@ class Queue  {
 
     pull(){
         const msg = this.queue.pop(0)
-        let result = Payload.empty(this.id)
+        let result = Payload.empty(this.topic)
         if (msg){
             result =  msg
         }

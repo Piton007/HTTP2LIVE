@@ -1,22 +1,20 @@
-const {User} = require("./user")
+const {Client} = require("./client")
 const { Topic } = require("./topic");
 
 class EventBus {
 	constructor() {
-        this.users = {};
+        this.clients = {};
         this.chats = {}
 	}
 
 	createUser() {
-		return User.create().then((user)=>{
-            this.users[user.id] = user 
-            return user.id
+		return Client.create().then((client)=>{
+            this.clients[client.id] = client 
+            return client.id
         })
     }
 
-    getWorker(workerId){
-        return this.workers[workerId]
-    }
+   
 
     dispatch(chatId,msg){
         if (this.chats[chatId]){
@@ -24,14 +22,15 @@ class EventBus {
         }
     }
 
-	join(workerId, chatId) {
+	join(clientId, chatId) {
         return new Promise((res,rej)=>{
             if (this.chats[chatId]){
-               this._join(workerId,chatId)
-               res(queueId)
+               this._join(clientId,chatId)
+               res(chatId)
             }else{
                 return this._createChat().then((id)=>{
-                    this._join(workerId,id)                       
+                 
+                    this._join(clientId,id)                       
                     res(id)
                 })
             }
@@ -39,23 +38,25 @@ class EventBus {
 		
     }
     listen(userId,callback){
-        const user = this.users[userId]
+        const user = this.clients[userId]
         if (user){
-            user.chats.forEach((q)=>{
-                callback(q.pull())
-            })
+            for (const msg of user.pullAll()) {
+                callback(msg)
+            }
         }
     }
 
    
     _createChat(){
         return Topic.create().then((topic)=>{
-            this.chats[topic.id] = topic
-            return topic.id
+            this.chats[topic.name] = topic
+            return topic.name
         })
     }
-	_join(workerId,chatId){
-        this.users[workerId].addChat(this.chats[chatId].addQueue(workerId))
+	_join(clientId,chatId){
+        this.chats[chatId].addQueue(clientId)
+        const queue = this.chats[chatId].getQueue(clientId)
+        this.clients[clientId].suscribe(queue)
     }
 }
 

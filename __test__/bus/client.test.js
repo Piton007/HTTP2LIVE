@@ -23,8 +23,8 @@ describe("Client tests", () => {
             topic2.dispatch(fakeData.msg())
             client.suscribe(topic1)
             client.suscribe(topic2)
-
-            const results = client.pullAll()
+            const gen = client.pullAll()
+            const results = [gen.next().value,gen.next().value]
             
             expect(results).toEqual(expected)
         })

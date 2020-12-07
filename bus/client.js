@@ -17,12 +17,14 @@ class Client {
         this._chats[queue.topic] = queue
     }
 
-    pullAll(){
-        const msg = []
+    *pullAll(){
         for (const id in this._chats) {
-            msg.push(this._chats[id].pull())
+            yield this._chats[id].pull()
         }
-        return msg
+    }
+
+    getChat(id){
+        return this._chats[id]
     }
 
 }
