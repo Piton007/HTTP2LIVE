@@ -13,14 +13,16 @@ class Client {
         this._chats = {} 
     }
 
-    suscribe(chat){
-        this._chats[chat.id] = chat
+    suscribe(queue){
+        this._chats[queue.topic] = queue
     }
 
-    pullChats(callback){
+    pullAll(){
+        const msg = []
         for (const id in this._chats) {
-            callback(this._chats[id].pull())
+            msg.push(this._chats[id].pull())
         }
+        return msg
     }
 
 }
